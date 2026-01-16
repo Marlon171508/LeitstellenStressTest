@@ -30,15 +30,10 @@ let timer = null;
 let timeLeft = 0;
 let running = false;
 
-// Eigener Text anzeigen
+// Eigener Text anzeigen/ausblenden
 textSelectEl.addEventListener("change", () => {
-    if (textSelectEl.value === "custom") {
-        customTextEl.style.display = "block";
-        customTextEl.disabled = false;
-        customTextEl.focus();
-    } else {
-        customTextEl.style.display = "none";
-    }
+    customTextEl.style.display = textSelectEl.value === "custom" ? "block" : "none";
+    if (textSelectEl.value === "custom") customTextEl.focus();
 });
 
 // Test starten
@@ -48,7 +43,7 @@ function startTest() {
     // Zeit
     timeLeft = parseInt(timeSelectEl.value, 10);
     if (isNaN(timeLeft) || timeLeft < 10) {
-        alert("Bitte eine gültige Zeit (≥10 Sekunden) auswählen.");
+        alert("Bitte eine gültige Zeit auswählen.");
         return;
     }
 
@@ -62,7 +57,7 @@ function startTest() {
             alert("Bitte eigenen Text eingeben.");
             return;
         }
-        customTextEl.style.display = "none"; // **Textfeld ausblenden**
+        customTextEl.style.display = "none"; // Ausblenden nach Start
     } else if (selected === "random") {
         text = TEXTS.random();
     } else if (TEXTS[selected]) {
@@ -88,7 +83,8 @@ function startTest() {
         textEl.appendChild(span);
     });
 
-    timer = setInterval(updateTimer, 1000);
+    // Timer starten
+    timer = setInterval(updateTimer, 100);
 }
 
 // Timer
@@ -97,14 +93,16 @@ function updateTimer() {
         endTest();
         return;
     }
-    timeLeft--;
-    timerEl.textContent = `⏱ ${timeLeft}s`;
+
+    // Timer runterzählen jede Sekunde
+    timeLeft -= 0.1;
+    timerEl.textContent = `⏱ ${Math.ceil(timeLeft)}s`;
 }
 
-// Prüfen, ob alle Zeichen getippt
+// Prüfen, ob alle Zeichen korrekt getippt
 function allTyped() {
     const chars = textEl.querySelectorAll("span");
-    return [...chars].every(span => span.classList.contains("correct"));
+    return chars.length > 0 && [...chars].every(span => span.classList.contains("correct"));
 }
 
 // Eingabe prüfen
@@ -115,19 +113,12 @@ inputEl.addEventListener("input", () => {
     const chars = textEl.querySelectorAll("span");
 
     chars.forEach((span, i) => {
-        if (input[i] === undefined) {
-            span.className = "";
-        } else if (input[i] === span.textContent) {
-            span.className = "correct";
-        } else {
-            span.className = "incorrect";
-        }
+        if (input[i] === undefined) span.className = "";
+        else if (input[i] === span.textContent) span.className = "correct";
+        else span.className = "incorrect";
     });
 
-    // Direkt prüfen, ob alles getippt
-    if (allTyped()) {
-        endTest();
-    }
+    if (allTyped()) endTest();
 });
 
 // Test beenden
@@ -147,22 +138,25 @@ function endTest() {
     document.getElementById("chars").textContent = charCount;
     document.getElementById("errors").textContent = errorCount;
     document.getElementById("accuracy").textContent = accuracy.toFixed(1) + "%";
-
     resultsEl.style.display = "grid";
 
-    // Wenn alle Zeichen korrekt getippt
-    const chars = textEl.querySelectorAll("span");
-    if ([...chars].every(span => span.classList.contains("correct"))) {
+    // Alle Zeichen korrekt? → Popup
+    if (allTyped()) {
         if (confirm("Glückwunsch! Noch eine Runde?")) {
-            // Zurück zur Themenauswahl
-            inputEl.value = "";
-            inputEl.disabled = true;
-            resultsEl.style.display = "none";
-            textEl.innerHTML = "";
-            textSelectEl.value = "random";
-            timeSelectEl.value = "60";
+            resetToSelection();
         }
     }
+}
+
+// Reset auf Themenauswahl
+function resetToSelection() {
+    inputEl.value = "";
+    inputEl.disabled = true;
+    resultsEl.style.display = "none";
+    textEl.innerHTML = "";
+    textSelectEl.value = "random";
+    timeSelectEl.value = "60";
+    customTextEl.style.display = "none";
 }
 
 window.startTest = startTest;
