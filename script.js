@@ -40,6 +40,7 @@ consoleEl.scrollTop = consoleEl.scrollHeight;
 
 // Starte zufälligen Einsatz
 function startIncident() {
+if (incident) return; // nur einmal starten
 const randomIncident = incidents[Math.floor(Math.random() * incidents.length)];
 const emotion = emotions[Math.floor(Math.random() * emotions.length)];
 incident = { type: randomIncident, emotion: emotion };
@@ -71,7 +72,7 @@ default:
 intro = "Notfall! Ich brauche Hilfe!";
 }
 
-addMessage(intro, "caller");
+setTimeout(() => addMessage(intro, "caller"), 500); // kleine Verzögerung für Realismus
 }
 
 // Erstelle dynamische Anruferantworten
@@ -87,7 +88,7 @@ weinerlich: ["Ich kann nicht mehr!", "Es ist alles so schlimm!", "Bitte, helfen 
 schreiend: ["Ahhhh!", "Hilfeeee!", "Es brennt!"]
 };
 
-// Wenn Frage „komisch“ / unpassend ist
+// Wenn Frage unpassend ist
 const inappropriateKeywords = ["mutter", "groß", "hund", "katze", "alter"];
 if (inappropriateKeywords.some(k => q.includes(k))) {
 return ["Was hat das damit zu tun?", "Warum fragen Sie das jetzt?", "Das ist doch gerade nicht wichtig!"][Math.floor(Math.random()*3)];
@@ -119,11 +120,8 @@ inputEl.value = "";
 
 addMessage("Disponent: " + text, "dispatcher");
 
-// Nach 1–2 Fragen zufällig Einsatz starten
-if (!incident) {
-  if (Math.random() < 0.5) startIncident();
-  else return;
-}
+// Einsatz starten, falls noch nicht aktiv
+if (!incident) startIncident();
 
 // Dynamische Antwort nach kurzer Verzögerung
 setTimeout(() => {
