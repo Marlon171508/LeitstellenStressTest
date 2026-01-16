@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Leitstellen Stress Test</title>
+    <title>Leitstellen Stress Test – Notruf Version</title>
 
     <style>
         body {
@@ -18,34 +18,33 @@
             margin-bottom: 30px;
         }
 
-        .container {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-
         .box {
             background: #161b22;
             padding: 20px;
             border-radius: 10px;
-            width: 350px;
+            width: 450px;
+            margin: 0 auto;
             box-shadow: 0 0 10px #000;
         }
 
-        .box h2 {
-            margin-top: 0;
-            color: #58a6ff;
-        }
-
-        button {
+        input, button {
             width: 100%;
             padding: 12px;
             margin-top: 10px;
-            background: #238636;
-            border: none;
             border-radius: 8px;
-            color: white;
+            border: none;
             font-size: 16px;
+        }
+
+        input {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            color: #e6edf3;
+        }
+
+        button {
+            background: #238636;
+            color: white;
             cursor: pointer;
         }
 
@@ -53,20 +52,10 @@
             background: #2ea043;
         }
 
-        input, textarea {
-            width: 100%;
-            padding: 10px;
-            margin-top: 8px;
-            border-radius: 6px;
-            border: 1px solid #30363d;
-            background: #0d1117;
-            color: #e6edf3;
-        }
-
         #timer {
             font-size: 28px;
             text-align: center;
-            margin-top: 10px;
+            margin-top: 20px;
             color: #ff5555;
         }
     </style>
@@ -74,47 +63,62 @@
 
 <body>
 
-<h1>Leitstellen Stress Test – Version 2</h1>
+<h1>Leitstellen Stress Test – Notruf Dialog</h1>
 
-<div class="container">
+<div class="box">
+    <h2 id="frage">Drücken Sie auf „Notruf starten“</h2>
 
-    <!-- Einsatzbox -->
-    <div class="box">
-        <h2>Einsatz</h2>
-        <p id="einsatzTitel">Noch kein Einsatz</p>
-        <p id="einsatzDetails"></p>
-        <button onclick="neuerEinsatz()">Neuen Einsatz generieren</button>
-        <div id="timer"></div>
-    </div>
+    <input id="eingabe" placeholder="Antwort eingeben..." disabled>
 
-    <!-- Eingabebox -->
-    <div class="box">
-        <h2>Notizen</h2>
-        <textarea id="notizen" rows="8" placeholder="Notizen eingeben..."></textarea>
+    <button onclick="startNotruf()">Notruf starten</button>
+    <button onclick="antwortSenden()">Antwort senden</button>
 
-        <h2>Rückmeldung</h2>
-        <input id="rueckmeldung" placeholder="Rückmeldung eingeben...">
+    <h3 id="einsatzTitel"></h3>
+    <p id="einsatzDetails"></p>
 
-        <button onclick="speichern()">Speichern</button>
-    </div>
-
+    <div id="timer"></div>
 </div>
 
 <script>
-    const einsaetze = [
-        { titel: "Bewusstlose Person", details: "Adresse: Hauptstraße 12 – RTW + NEF" },
-        { titel: "Verkehrsunfall", details: "2 Verletzte – B27 – Feuerwehr + RTW" },
-        { titel: "Wohnungsbrand", details: "Mehrere Anrufer – Feuerwehr + RTW + Polizei" },
-        { titel: "Herzinfarkt", details: "Mann, 58 – Brustschmerzen – RTW + NEF" },
-        { titel: "Sturz aus Höhe", details: "Baustelle – 1 Person bewusstlos – RTW + NEF" },
-        { titel: "Schlägerei", details: "2 Verletzte – Polizei + RTW" }
+    const fragen = [
+        "Notruf, wo genau ist der Notfallort?",
+        "Was ist passiert?",
+        "Wie viele Verletzte gibt es?",
+        "Ist die Person ansprechbar?",
+        "Bleiben Sie bitte dran – Hilfe ist unterwegs."
     ];
 
+    const einsaetze = [
+        { titel: "Bewusstlose Person", details: "RTW + NEF" },
+        { titel: "Verkehrsunfall", details: "2 Verletzte – Feuerwehr + RTW" },
+        { titel: "Wohnungsbrand", details: "Feuerwehr + RTW + Polizei" },
+        { titel: "Herzinfarkt", details: "RTW + NEF" }
+    ];
+
+    let frageIndex = 0;
     let timerInterval;
 
-    function neuerEinsatz() {
-        clearInterval(timerInterval);
+    function startNotruf() {
+        frageIndex = 0;
+        document.getElementById("frage").textContent = fragen[frageIndex];
+        document.getElementById("eingabe").disabled = false;
+        document.getElementById("eingabe").value = "";
+        document.getElementById("einsatzTitel").textContent = "";
+        document.getElementById("einsatzDetails").textContent = "";
+        document.getElementById("timer").textContent = "";
+    }
 
+    function antwortSenden() {
+        if (frageIndex < fragen.length - 1) {
+            frageIndex++;
+            document.getElementById("frage").textContent = fragen[frageIndex];
+            document.getElementById("eingabe").value = "";
+        } else {
+            startEinsatz();
+        }
+    }
+
+    function startEinsatz() {
         const zufall = einsaetze[Math.floor(Math.random() * einsaetze.length)];
 
         document.getElementById("einsatzTitel").textContent = zufall.titel;
@@ -136,13 +140,6 @@
 
             rest--;
         }, 1000);
-    }
-
-    function speichern() {
-        const notiz = document.getElementById("notizen").value;
-        const rueck = document.getElementById("rueckmeldung").value;
-
-        alert("Gespeichert:\n\nNotizen:\n" + notiz + "\n\nRückmeldung:\n" + rueck);
     }
 </script>
 
