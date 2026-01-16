@@ -1,136 +1,138 @@
-const consoleEl = document.getElementById("console");
-const inputEl = document.getElementById("userInput");
+"use strict";
 
-// Aktueller Anrufer-Zustand
-let incident = null;
+/* ============================
+   TippTest – script.js
+   ============================ */
 
-// Verschiedene Einsatztypen
-const incidents = [
-"Wohnungsbrand",
-"Herzinfarkt",
-"Verkehrsunfall",
-"Bewusstlose Person",
-"Überfall",
-"Geburt",
-"Sturz/Verletzung"
+/* -------- Texte -------- */
+const TEXTS = [
+    "Programmieren macht Spaß und erfordert Konzentration und Übung.",
+    "Die Schreibgeschwindigkeit verbessert sich mit regelmäßigem Training.",
+    "GitHub Pages ist eine einfache Möglichkeit Webseiten zu veröffentlichen.",
+    "Sauberer Code ist genauso wichtig wie funktionierender Code.",
+    "Ein gutes Benutzererlebnis beginnt mit durchdachtem Design."
 ];
 
-// Emotionen, die der Anrufer zeigen kann
-const emotions = [
-"panisch",
-"verängstigt",
-"verwirrt",
-"weinerlich",
-"schreiend"
-];
+/* -------- DOM -------- */
+const textEl = document.getElementById("text");
+const inputEl = document.getElementById("input");
+const timerEl = document.getElementById("timer");
+const resultsEl = document.getElementById("results");
+const timeSelectEl = document.getElementById("timeSelect");
 
-// Initialisiere die Simulation
-function init() {
-addMessage("System: Verbindung hergestellt. Warten auf eingehenden Notruf …", "dispatcher");
+/* -------- State -------- */
+let timer = null;
+let timeLeft = 0;
+let testRunning = false;
+let currentText = "";
+
+/* ============================
+   Test starten
+   ============================ */
+function startTest() {
+    clearInterval(timer);
+
+    timeLeft = parseInt(timeSelectEl.value, 10);
+    testRunning = true;
+
+    inputEl.value = "";
+    inputEl.disabled = false;
+    inputEl.focus();
+
+    resultsEl.style.display = "none";
+    timerEl.textContent = `⏱ ${timeLeft}s`;
+
+    loadRandomText();
+    timer = setInterval(updateTimer, 1000);
 }
 
-// Füge Nachricht ins Konsolenfenster ein
-function addMessage(text, type) {
-const div = document.createElement("div");
-div.className = "message " + type;
-div.textContent = text;
-consoleEl.appendChild(div);
-consoleEl.scrollTop = consoleEl.scrollHeight;
+/* ============================
+   Zufälligen Text laden
+   ============================ */
+function loadRandomText() {
+    currentText = TEXTS[Math.floor(Math.random() * TEXTS.length)];
+    textEl.innerHTML = "";
+
+    [...currentText].forEach(char => {
+        const span = document.createElement("span");
+        span.textContent = char;
+        textEl.appendChild(span);
+    });
 }
 
-// Starte zufälligen Einsatz
-function startIncident() {
-if (incident) return; // nur einmal starten
-const randomIncident = incidents[Math.floor(Math.random() * incidents.length)];
-const emotion = emotions[Math.floor(Math.random() * emotions.length)];
-incident = { type: randomIncident, emotion: emotion };
+/* ============================
+   Timer
+   ============================ */
+function updateTimer() {
+    if (timeLeft <= 0) {
+        finishTest();
+        return;
+    }
 
-let intro = "";
-switch (randomIncident) {
-case "Wohnungsbrand":
-intro = "Hallo?! Hilfe! Es brennt! Überall Rauch!";
-break;
-case "Herzinfarkt":
-intro = "Mir geht’s schlecht… meine Brust tut weh, ich kann kaum atmen!";
-break;
-case "Verkehrsunfall":
-intro = "Ich hatte einen Unfall! Mein Auto ist kaputt, jemand muss kommen!";
-break;
-case "Bewusstlose Person":
-intro = "Hier liegt jemand bewusstlos am Boden!";
-break;
-case "Überfall":
-intro = "Hilfe! Ich werde gerade überfallen!";
-break;
-case "Geburt":
-intro = "Es geht los! Das Baby kommt! Bitte helfen Sie!";
-break;
-case "Sturz/Verletzung":
-intro = "Ich bin gestürzt und kann mich nicht bewegen!";
-break;
-default:
-intro = "Notfall! Ich brauche Hilfe!";
+    timeLeft--;
+    timerEl.textContent = `⏱ ${timeLeft}s`;
 }
 
-setTimeout(() => addMessage(intro, "caller"), 500); // kleine Verzögerung für Realismus
-}
+/* ============================
+   Eingabe prüfen
+   ============================ */
+inputEl.addEventListener("input", () => {
+    if (!testRunning) return;
 
-// Erstelle dynamische Anruferantworten
-function callerResponse(question) {
-const q = question.toLowerCase().trim();
+    const inputChars = inputEl.value.split("");
+    const textChars = textEl.querySelectorAll("span");
 
-// Reagiere emotional
-const emotionPhrases = {
-panisch: ["Oh nein, bitte schnell!", "Ich weiß nicht, was ich tun soll!", "Bitte helfen Sie!"],
-verängstigt: ["Ich habe Angst!", "Es passiert alles so schnell!", "Bitte beruhigen Sie mich!"],
-verwirrt: ["Was? Ich verstehe nicht!", "Warum fragen Sie das?", "Ich bin verwirrt!"],
-weinerlich: ["Ich kann nicht mehr!", "Es ist alles so schlimm!", "Bitte, helfen Sie mir!"],
-schreiend: ["Ahhhh!", "Hilfeeee!", "Es brennt!"]
-};
+    let errors = 0;
 
-// Wenn Frage unpassend ist
-const inappropriateKeywords = ["mutter", "groß", "hund", "katze", "alter"];
-if (inappropriateKeywords.some(k => q.includes(k))) {
-return ["Was hat das damit zu tun?", "Warum fragen Sie das jetzt?", "Das ist doch gerade nicht wichtig!"][Math.floor(Math.random()*3)];
-}
+    textChars.forEach((charSpan, index) => {
+        const typedChar = inputChars[index];
 
-// Wenn Notfall-Thema erwähnt wird
-const keywords = ["feuer","brand","schmerz","unfall","hilfe","baby","blut","bewusstlos"];
-if (keywords.some(k => q.includes(k))) {
-return emotionPhrases[incident.emotion][Math.floor(Math.random()*emotionPhrases[incident.emotion].length)];
-}
-
-// Standardantwort: logisch, emotional
-const genericResponses = [
-"Bitte schicken Sie einfach Hilfe!",
-"Ich weiß nicht, was ich tun soll!",
-"Schnell, es wird schlimmer!",
-"Warum fragen Sie das?",
-"Ich habe Angst!"
-];
-
-return genericResponses[Math.floor(Math.random() * genericResponses.length)];
-}
-
-// Eingabe des Disponenten
-inputEl.addEventListener("keydown", e => {
-if (e.key === "Enter" && inputEl.value.trim() !== "") {
-const text = inputEl.value;
-inputEl.value = "";
-
-addMessage("Disponent: " + text, "dispatcher");
-
-// Einsatz starten, falls noch nicht aktiv
-if (!incident) startIncident();
-
-// Dynamische Antwort nach kurzer Verzögerung
-setTimeout(() => {
-  addMessage(callerResponse(text), "caller");
-}, 500 + Math.random()*500);
-
-
-}
+        if (typedChar === undefined) {
+            charSpan.className = "";
+        } else if (typedChar === charSpan.textContent) {
+            charSpan.className = "correct";
+        } else {
+            charSpan.className = "incorrect";
+            errors++;
+        }
+    });
 });
 
-// Starte Simulation
-init();
+/* ============================
+   Test beenden & auswerten
+   ============================ */
+function finishTest() {
+    clearInterval(timer);
+    testRunning = false;
+    inputEl.disabled = true;
+
+    const typedText = inputEl.value.trim();
+    const charCount = typedText.length;
+    const wordCount = typedText ? typedText.split(/\s+/).length : 0;
+    const errorCount = textEl.querySelectorAll(".incorrect").length;
+
+    const duration = parseInt(timeSelectEl.value, 10);
+    const wpm = Math.round((wordCount / duration) * 60);
+    const accuracy = charCount
+        ? Math.max(0, ((charCount - errorCount) / charCount) * 100)
+        : 0;
+
+    updateResults(wpm, charCount, errorCount, accuracy);
+}
+
+/* ============================
+   Ergebnisse anzeigen
+   ============================ */
+function updateResults(wpm, chars, errors, accuracy) {
+    document.getElementById("wpm").textContent = wpm;
+    document.getElementById("chars").textContent = chars;
+    document.getElementById("errors").textContent = errors;
+    document.getElementById("accuracy").textContent = accuracy.toFixed(1) + "%";
+
+    resultsEl.style.display = "grid";
+}
+
+/* ============================
+   Global verfügbar machen
+   ============================ */
+window.startTest = startTest;
