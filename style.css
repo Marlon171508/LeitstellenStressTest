@@ -1,13 +1,81 @@
-body {
-background: black;
-color: lime;
-font-family: monospace;
-text-align: center;
-margin-top: 100px;
+{
+box-sizing: border-box;
+font-family: "Segoe UI", Arial, sans-serif;
 }
 
-button {
-font-size: 20px;
-padding: 10px 20px;
-cursor: pointer;
+body {
+margin: 0;
+height: 100vh;
+background: #0b0f14;
+color: #e6e6e6;
+}
+
+#app {
+display: flex;
+flex-direction: column;
+height: 100vh;
+}
+
+/* HEADER */
+#header {
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 12px 20px;
+background: #111820;
+border-bottom: 1px solid #1f2a36;
+}
+
+.title {
+letter-spacing: 2px;
+font-size: 16px;
+font-weight: bold;
+}
+
+/* CONSOLE */
+#console {
+flex: 1;
+padding: 20px;
+overflow-y: auto;
+background: radial-gradient(circle at center, #0f1620 0%, #0b0f14 70%);
+}
+
+.message {
+margin-bottom: 14px;
+line-height: 1.5;
+word-wrap: break-word;
+}
+
+.dispatcher {
+color: #6bbcff;
+}
+
+.caller {
+color: #ffb86b;
+font-weight: bold;
+}
+
+/* INPUT */
+#inputArea {
+padding: 10px;
+background: #111820;
+border-top: 1px solid #1f2a36;
+}
+
+#userInput {
+width: 100%;
+padding: 12px;
+font-size: 14px;
+background: #0b0f14;
+border: 1px solid #1f2a36;
+color: #e6e6e6;
+}
+
+#userInput::placeholder {
+color: #777;
+}
+
+#userInput:focus {
+outline: none;
+border-color: #6bbcff;
 }
