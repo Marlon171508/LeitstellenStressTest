@@ -3,161 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TippTest – Professioneller Schreibtest</title>
 
-    <meta name="description" content="Kostenloser TippTest – Teste deine Schreibgeschwindigkeit und Genauigkeit.">
+    <title>TippTest – Schreibgeschwindigkeit testen</title>
+    <meta name="description" content="Professioneller TippTest zur Messung von Schreibgeschwindigkeit und Genauigkeit.">
     <meta name="author" content="DEIN NAME">
 
-    <style>
-        :root {
-            --primary: #2563eb;
-            --bg: #0f172a;
-            --card: #020617;
-            --text: #e5e7eb;
-            --muted: #94a3b8;
-            --error: #ef4444;
-            --success: #22c55e;
-        }
-
-        * {
-            box-sizing: border-box;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-
-        body {
-            margin: 0;
-            background: linear-gradient(135deg, #020617, #0f172a);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .app {
-            background: var(--card);
-            width: 100%;
-            max-width: 900px;
-            padding: 32px;
-            border-radius: 16px;
-            box-shadow: 0 25px 60px rgba(0,0,0,.5);
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 8px;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: var(--muted);
-            margin-bottom: 32px;
-        }
-
-        .controls {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        select, button {
-            padding: 10px 16px;
-            font-size: 16px;
-            border-radius: 8px;
-            border: none;
-        }
-
-        select {
-            background: #020617;
-            color: var(--text);
-            border: 1px solid #1e293b;
-        }
-
-        button {
-            background: var(--primary);
-            color: white;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        button:hover {
-            opacity: .9;
-        }
-
-        .timer {
-            text-align: center;
-            font-size: 24px;
-            margin-bottom: 16px;
-        }
-
-        .text-box {
-            background: #020617;
-            border: 1px solid #1e293b;
-            border-radius: 12px;
-            padding: 20px;
-            font-size: 18px;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            user-select: none;
-        }
-
-        .text-box span.correct {
-            color: var(--success);
-        }
-
-        .text-box span.incorrect {
-            color: var(--error);
-            text-decoration: underline;
-        }
-
-        textarea {
-            width: 100%;
-            height: 120px;
-            font-size: 18px;
-            padding: 16px;
-            border-radius: 12px;
-            border: 1px solid #1e293b;
-            background: #020617;
-            color: var(--text);
-            resize: none;
-        }
-
-        textarea:disabled {
-            opacity: .6;
-        }
-
-        .results {
-            margin-top: 24px;
-            display: none;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 16px;
-        }
-
-        .result {
-            background: #020617;
-            padding: 16px;
-            border-radius: 12px;
-            text-align: center;
-        }
-
-        footer {
-            margin-top: 40px;
-            text-align: center;
-            font-size: 14px;
-            color: var(--muted);
-        }
-
-        footer a {
-            color: var(--muted);
-            text-decoration: none;
-            margin: 0 8px;
-        }
-
-        footer a:hover {
-            color: var(--text);
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -181,102 +32,32 @@
     <textarea id="input" placeholder="Hier tippen..." disabled></textarea>
 
     <div class="results" id="results">
-        <div class="result"><strong>WPM</strong><div id="wpm">0</div></div>
-        <div class="result"><strong>Zeichen</strong><div id="chars">0</div></div>
-        <div class="result"><strong>Fehler</strong><div id="errors">0</div></div>
-        <div class="result"><strong>Genauigkeit</strong><div id="accuracy">0%</div></div>
+        <div class="result">
+            <strong>WPM</strong>
+            <div id="wpm">0</div>
+        </div>
+        <div class="result">
+            <strong>Zeichen</strong>
+            <div id="chars">0</div>
+        </div>
+        <div class="result">
+            <strong>Fehler</strong>
+            <div id="errors">0</div>
+        </div>
+        <div class="result">
+            <strong>Genauigkeit</strong>
+            <div id="accuracy">0%</div>
+        </div>
     </div>
 
     <footer>
-        <a href="#">Impressum</a> |
-        <a href="#">Datenschutz</a>
+        <a href="impressum.html">Impressum</a> |
+        <a href="datenschutz.html">Datenschutz</a>
         <br>
         © 2026 DEIN NAME
     </footer>
 </div>
 
-<script>
-    const texts = [
-        "Programmieren macht Spaß und erfordert Konzentration und Übung.",
-        "Die Schreibgeschwindigkeit verbessert sich mit regelmäßigem Training.",
-        "GitHub Pages ist eine einfache Möglichkeit Webseiten zu veröffentlichen.",
-        "Sauberer Code ist genauso wichtig wie funktionierender Code."
-    ];
-
-    const textEl = document.getElementById("text");
-    const inputEl = document.getElementById("input");
-    const timerEl = document.getElementById("timer");
-    const resultsEl = document.getElementById("results");
-
-    let timer;
-    let timeLeft;
-    let started = false;
-
-    function startTest() {
-        const duration = parseInt(document.getElementById("timeSelect").value);
-        timeLeft = duration;
-        timerEl.textContent = `⏱ ${timeLeft}s`;
-        inputEl.value = "";
-        inputEl.disabled = false;
-        inputEl.focus();
-        resultsEl.style.display = "none";
-
-        const text = texts[Math.floor(Math.random() * texts.length)];
-        textEl.innerHTML = text.split("").map(char => `<span>${char}</span>`).join("");
-
-        started = true;
-        clearInterval(timer);
-        timer = setInterval(updateTimer, 1000);
-    }
-
-    function updateTimer() {
-        if (timeLeft <= 0) {
-            endTest();
-            return;
-        }
-        timeLeft--;
-        timerEl.textContent = `⏱ ${timeLeft}s`;
-    }
-
-    inputEl.addEventListener("input", () => {
-        if (!started) return;
-
-        const chars = textEl.querySelectorAll("span");
-        const input = inputEl.value.split("");
-        let errors = 0;
-
-        chars.forEach((char, index) => {
-            if (input[index] == null) {
-                char.className = "";
-            } else if (input[index] === char.textContent) {
-                char.className = "correct";
-            } else {
-                char.className = "incorrect";
-                errors++;
-            }
-        });
-    });
-
-    function endTest() {
-        clearInterval(timer);
-        inputEl.disabled = true;
-        started = false;
-
-        const input = inputEl.value;
-        const words = input.trim().split(/\s+/).length;
-        const chars = input.length;
-        const errors = textEl.querySelectorAll(".incorrect").length;
-        const accuracy = chars ? Math.max(0, ((chars - errors) / chars) * 100) : 0;
-        const wpm = Math.round((words / parseInt(document.getElementById("timeSelect").value)) * 60);
-
-        document.getElementById("wpm").textContent = wpm;
-        document.getElementById("chars").textContent = chars;
-        document.getElementById("errors").textContent = errors;
-        document.getElementById("accuracy").textContent = accuracy.toFixed(1) + "%";
-
-        resultsEl.style.display = "grid";
-    }
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
