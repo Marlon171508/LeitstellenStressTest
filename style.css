@@ -6,6 +6,7 @@
     padding: 0;
 }
 
+/* === Light Mode Variablen === */
 :root {
     --primary: #2563eb;
     --primary-hover: #1d4ed8;
@@ -18,9 +19,14 @@
     --error: #ef4444;
     --radius: 16px;
 
-
+    /* Dark/Light Mode Variablen für body, buttons usw. */
+    --bg-color: #ffffff;
+    --text-color: #000000;
+    --primary-color: #4CAF50;
+    --secondary-color: #f0f0f0;
 }
 
+/* === Dark Mode Variablen === */
 body.dark-mode {
     --bg-color: #1e1e1e;
     --text-color: #f0f0f0;
@@ -28,24 +34,7 @@ body.dark-mode {
     --secondary-color: #2c2c2c;
 }
 
-/* Anwenden */
-body {
-    background-color: var(--bg-color);
-    color: var(--text-color);
-}
-
-button, select, textarea {
-    background-color: var(--secondary-color);
-    color: var(--text-color);
-    border: 1px solid var(--primary-color);
-}
-
-footer a {
-    color: var(--primary-color);
-}
-
-}
-
+/* === Grundlegende Styles, die Variablen nutzen === */
 body {
     min-height: 100vh;
     background: var(--bg-gradient);
@@ -200,4 +189,15 @@ footer a:hover {
     textarea {
         font-size: 1rem;
     }
+}
+
+/* === Dark/Light Mode Variablen auf Buttons, Textareas anwenden === */
+button, select, textarea {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    border: 1px solid var(--primary-color);
+}
+
+footer a {
+    color: var(--primary-color);
 }
